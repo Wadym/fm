@@ -1,0 +1,45 @@
+# Visual Studio Code
+.vscode
+
+# Rider
+.idea
+
+# Visual Studio 2015
+.vs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+*.pyc
+build-*/
+build/
+dist/
+docker_build/
+
+_projects/
+.mypy_cache/
+
+**/venv/
+api/tests/integrations/**/out/
+**/.__pycache__
+*.pyo
+
+bin
+lib
+obj
+TestResults
+cmake-build-debug
+cmake-build-release
+
+.vscode/
+.flattened-pom.xml
+
+cmake-build-*/
+
+.cache/
+.kdev4/
+frontend/docker-compose.yml
+.DS_Store
