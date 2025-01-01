@@ -1,0 +1,43 @@
+/ {
+	aliases {
+		toggle = &toggle_gpio;
+		sw0 = &button0;
+	};
+
+	app-gpios {
+		compatible = "gpio-keys";
+		toggle_gpio: toggle-gpio {
+			gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
+			label = "Toggle Teensy Pin 9";
+		};
+		button0: button_0 {
+			gpios = < &gpio1 25 GPIO_ACTIVE_LOW >;
+			label = "Push button switch 0 at Pin 23";
+		};
+	};
+};
+
+&lpuart1 {
+	status = "okay";
+	current-speed = <115200>; /* Set UART baud rate */
+	tx-pin = <1>;            /* TX pin number */
+	rx-pin = <0>;            /* RX pin number */
+	label = "UART_1";
+};
+&lpuart4 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_4";
+};
+
+&lpuart8 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_8";
+};
+
+&lpuart6 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_6";
+};

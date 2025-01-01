@@ -1,0 +1,3 @@
+[submodule "src/test_idea/teensy4_shell"]
+	path = src/test_idea/teensy4_shell
+	url = https://github.com/ufechner7/teensy4_shell.git
