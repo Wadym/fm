@@ -24,6 +24,7 @@
 #define PRIORITY        -5
 
 #define UART_DEV        DT_LABEL(DT_NODELABEL(lpuart4))
+//#define UART_DEV        DT_LABEL(DT_NODELABEL(lpuart1))
 
 /*** Types **************************************************************************/
 extern struct k_msgq data_message_q;
@@ -51,6 +52,7 @@ void uart_main_f()
   uart = device_get_binding(UART_DEV);
   if (uart == NULL) {
     LOG_ERR("Device binding is NULL");
+    printk("Hello World from uart! uart == NULL\n");
     return;
   }
 
@@ -64,6 +66,7 @@ void uart_main_f()
     k_msgq_get(&data_message_q, &tx_msg, K_FOREVER);
     tx_done=false;
     uart_irq_tx_enable(uart);
+    printk("Hello World from uart! while loop\n");
 
     while(!tx_done){}
   }

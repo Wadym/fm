@@ -41,6 +41,7 @@ static void print_uart(char *buf);
 
 //exteral struct k_msgq data_message_q;
 
+//#define UART_DEVICE_NODE DT_NODELABEL(lpuart6)
 #define UART_DEVICE_NODE DT_NODELABEL(lpuart6)
 static const struct device *uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
 
@@ -66,13 +67,12 @@ static int rx_buf_pos;
 #define PRIORITY 7
 
 /* delay between greetings (in ms) */
-#define SLEEPTIME 50000
+#define SLEEPTIME 5000
 
 /*** Macros *************************************************************************/
 LOG_MODULE_REGISTER(LOG_MODULE_NAME, LOG_LEVEL_DBG);
 
-K_THREAD_DEFINE(uart6_id, STACK_SIZE, uart6_main, NULL, NULL, NULL,
-PRIORITY, 0, START_DELAY);
+K_THREAD_DEFINE(uart6_id, STACK_SIZE, uart6_main, NULL, NULL, NULL, PRIORITY, 0, START_DELAY);
 
 /*** Function implementation ********************************************************/
 

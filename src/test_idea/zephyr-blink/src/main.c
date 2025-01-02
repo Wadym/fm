@@ -115,7 +115,7 @@ static bool sw = false;
 #define PRIORITY 7
 
 /* delay between greetings (in ms) */
-#define SLEEPTIME 50000
+#define SLEEPTIME 500
 
 /*
  * @param my_name      thread identification string
@@ -143,17 +143,17 @@ void helloLoop(const char *my_name,
     if (tname == NULL) {
       printk("%s: Hello World from cpu %d on %s!\n",
              my_name, cpu, CONFIG_BOARD);
-      sleepTime = 50000;
+      sleepTime = 50;
     } else {
       printk("%s: Hello World from cpu %d on %s!\n",
              tname, cpu, CONFIG_BOARD);
-      sleepTime = sw ? 500 : 15000;
+      sleepTime = sw ? 500 : 700;
       sw = !sw;
 
     }
 
     /* wait a while, then let other thread have a turn */
-    k_busy_wait(20000);
+    k_busy_wait(2000);
     k_msleep(SLEEPTIME);
     k_sem_give(other_sem);
   }
