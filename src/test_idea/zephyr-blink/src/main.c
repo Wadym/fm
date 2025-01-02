@@ -10,16 +10,11 @@
 #include <drivers/gpio.h>
 #include <logging/log.h>
 #include <sys/printk.h>
-//#include <zephyr/kernel.h>
 #include <zephyr.h>
-
-//#include <zephyr/drivers/uart.h>
 #include <drivers/uart.h>
 #include <usb/usb_device.h>
 #include <string.h>
 #include <stdbool.h>
-//#include <zephyr/device.h>
-#include <device.h>
 
 //#include <globals.h>
 
@@ -30,98 +25,72 @@
 #define LOG_MODULE_NAME sys
 LOG_MODULE_REGISTER(LOG_MODULE_NAME, LOG_LEVEL_DBG);
 
+struct k_msgq data_message_q;
 
-
-/* change this to any other UART peripheral if desired */
-//#define UART_DEVICE_NODE DT_CHOSEN(zephyr_shell_uart)
-//#define UART_DEVICE_NODE DT_CHOSEN(console)
-//#define UART_DEVICE_NODE DT_NODELABEL(lpuart1)
 #define UART_DEVICE_NODE DT_NODELABEL(lpuart6)
 const struct device *uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
 
-#define MSG_SIZE 32
+//#define MSG_SIZE 32
 
 /* queue to store up to 10 messages (aligned to 4-byte boundary) */
-K_MSGQ_DEFINE(uart_msgq, MSG_SIZE, 10, 4);
-
-//static const struct device *const uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
-
+//K_MSGQ_DEFINE(uart_msgq, MSG_SIZE, 10, 4);
 
 /* receive buffer used in UART ISR callback */
-static char rx_buf[MSG_SIZE];
-static int rx_buf_pos;
+//static char rx_buf[MSG_SIZE];
+//static int rx_buf_pos;
 
 /*
  * Read characters from UART until line end is detected. Afterwards push the
  * data to the message queue.
  */
-void serial_cb(const struct device *dev, void *user_data)
-{
-  uint8_t c;
-
-  if (!uart_irq_update(uart_dev)) {
-    return;
-  }
-
-  if (!uart_irq_rx_ready(uart_dev)) {
-    return;
-  }
-
-  /* read until FIFO empty */
-  while (uart_fifo_read(uart_dev, &c, 1) == 1) {
-    if ((c == '\n' || c == '\r') && rx_buf_pos > 0) {
-      /* terminate string */
-      rx_buf[rx_buf_pos] = '\0';
-
-      /* if queue is full, message is silently dropped */
-      k_msgq_put(&uart_msgq, &rx_buf, K_NO_WAIT);
-
-      /* reset the buffer (it was copied to the msgq) */
-      rx_buf_pos = 0;
-    } else if (rx_buf_pos < (sizeof(rx_buf) - 1)) {
-      rx_buf[rx_buf_pos++] = c;
-    }
-    /* else: characters beyond buffer size are dropped */
-  }
-}
+//void serial_cb(const struct device *dev, void *user_data)
+//{
+//  uint8_t c;
+//
+//  if (!uart_irq_update(uart_dev)) {
+//    return;
+//  }
+//
+//  if (!uart_irq_rx_ready(uart_dev)) {
+//    return;
+//  }
+//
+//  /* read until FIFO empty */
+//  while (uart_fifo_read(uart_dev, &c, 1) == 1) {
+//    if ((c == '\n' || c == '\r') && rx_buf_pos > 0) {
+//      /* terminate string */
+//      rx_buf[rx_buf_pos] = '\0';
+//
+//      /* if queue is full, message is silently dropped */
+//      k_msgq_put(&uart_msgq, &rx_buf, K_NO_WAIT);
+//
+//      /* reset the buffer (it was copied to the msgq) */
+//      rx_buf_pos = 0;
+//    } else if (rx_buf_pos < (sizeof(rx_buf) - 1)) {
+//      rx_buf[rx_buf_pos++] = c;
+//    }
+//    /* else: characters beyond buffer size are dropped */
+//  }
+//}
 
 /*
  * Print a null-terminated string character by character to the UART interface
  */
-void print_uart(char *buf)
-{
-  int msg_len = strlen(buf);
+//void print_uart(char *buf)
+//{
+//  int msg_len = strlen(buf);
+//
+//  for (int i = 0; i < msg_len; i++) {
+//    uart_poll_out(uart_dev, buf[i]);
+//  }
+//}
 
-  for (int i = 0; i < msg_len; i++) {
-    uart_poll_out(uart_dev, buf[i]);
-  }
-}
-
-
-
-
-
-
-#undef UART_AVAILABLE
-#ifdef UART_AVAILABLE
-// Function prototypes
-void process_command(const char *cmd);
-void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
-
-static uint8_t uart_rx_buffer[UART_BUFFER_SIZE];   // UART RX buffer
-static char cmd_buffer[CMD_BUFFER_SIZE];          // Buffer to store incoming commands
-static size_t cmd_pos = 0;                        // Position in the command buffer
-
-//const struct device *uart_dev;
-//#define UART_DEVICE_NODE DT_NODELABEL(lpuart1)
-//const struct device *uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
-#endif
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   100
 
 long sleepTime = 100;
-bool sw = false;
+static bool sw = false;
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED0_NODE DT_ALIAS(led0)
@@ -238,79 +207,25 @@ const struct device *dev;
 bool led_is_on = true;
 int ret;
 
-//#define UART_DEVICE_NODE DT_NODELABEL(lpuart1)
-
 void main(void) {
 
-  char tx_buf[MSG_SIZE];
-
-  if (!device_is_ready(uart_dev)) {
-    printk("UART device not found!");
-    return;
-  }
+//  char tx_buf[MSG_SIZE];
+//
+//  if (!device_is_ready(uart_dev)) {
+//    printk("UART device not found!");
+//    return;
+//  }
 
   /* configure interrupt and callback to receive data */
-//  int ret_uart;
-uart_irq_callback_user_data_set(uart_dev, serial_cb, NULL);
+//uart_irq_callback_user_data_set(uart_dev, serial_cb, NULL);
 
-//  if (ret_uart < 0) {
-//    if (ret_uart == -ENOTSUP) {
-//      printk("Interrupt-driven UART API support not enabled\n");
-//    } else if (ret_uart == -ENOSYS) {
-//      printk("UART device does not support interrupt-driven API\n");
-//    } else {
-//      printk("Error setting UART callback: %d\n", ret_uart);
-//    }
-//    return;
-//  }
-  uart_irq_rx_enable(uart_dev);
+  //uart_irq_rx_enable(uart_dev);
 //
-  print_uart("Hello! I'm your echo bot.\r\n");
-  print_uart("Tell me something and press enter:\r\n");
+//  print_uart("Hello! I'm your echo bot.\r\n");
+//  print_uart("Tell me something and press enter:\r\n");
 
 
 
-
-#ifdef UART_AVAILABLE
-//#define UART_DEVICE_NODE DT_NODELABEL(lpuart1)
-  //const struct device *uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
-  //const struct device *uart_dev = DEVICE_DT_GET(lpuart1);
-#define UART_DEV        DT_LABEL(DT_NODELABEL(lpuart1))
-  const struct device *uart_dev;// = "UART_1";
-
-  // UART
-  printk("UART Command Parser Example\n");
-
-  //uart_dev = DEVICE_DT_GET(DT_NODELABEL(lpuart1));  // Adjust node label to match your DTS
-  //uart_dev = DEVICE_DT_GET(DT_NODELABEL(lpuart1));  // Adjust node label to match your DTS
-  //uart_dev = DEVICE_DT_GET(UART_1);  // Adjust node label to match your DTS
-//  if (!device_is_ready(uart_dev)) {
-//    printk("UART device not ready\n");
-//    return;
-//  }
-
-  //const struct device *uart;
-
-  uart_dev = device_get_binding(UART_DEV);
-  if (uart_dev == NULL) {
-    LOG_ERR("Device binding is NULL");
-    return;
-  }
-
-  //int ret = uart_callback_set(uart_dev, uart_callback, NULL);
-  ret = uart_callback_set(uart_dev, uart_callback, NULL);
-  if (ret) {
-    printk("Failed to set UART callback: %d\n", ret);
-    return;
-  }
-
-  ret = uart_rx_enable(uart_dev, uart_rx_buffer, sizeof(uart_rx_buffer), 100);
-  if (ret) {
-    printk("Failed to enable UART RX: %d\n", ret);
-    return;
-  }
-  // END OF UART
-#endif
 
   dev = device_get_binding(LED0);
   if (dev == NULL) {
@@ -322,23 +237,16 @@ uart_irq_callback_user_data_set(uart_dev, serial_cb, NULL);
     return;
   }
 
-  /* indefinitely wait for input from the user */
-//  while (k_msgq_get(&uart_msgq, &tx_buf, K_FOREVER) == 0) {
-//    print_uart("Echo: ");
-//    print_uart(tx_buf);
-//    print_uart("\r\n");
-//  }
-
   while (1) {
     gpio_pin_set(dev, PIN, (int) led_is_on);
     led_is_on = !led_is_on;
     //k_msleep(SLEEP_TIME_MS);
     k_msleep(sleepTime);
 
-    k_msgq_get(&uart_msgq, &tx_buf, K_FOREVER);
-    print_uart("Echo: ");
-    print_uart(tx_buf);
-    print_uart("\r\n");
+//    k_msgq_get(&uart_msgq, &tx_buf, K_FOREVER);
+//    print_uart("Echo: ");
+//    print_uart(tx_buf);
+//    print_uart("\r\n");
   }
 }
 
