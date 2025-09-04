@@ -1,0 +1,22 @@
+/* Overlay to enable LPUART6 on Teensy 4.0 for SBUS/RC input via pin 15 */
+
+&lpuart6 {
+	status = "okay";
+	current-speed = <100000>;         /* SBUS uses 100k baud */
+	parity = "even";
+	stop-bits = <2>;
+	rx-inverted;                      /* SBUS signal is inverted */
+	/* Pin muxing: Teensy 4.0 pin 15 = GPIO_AD_B1_03 = LPUART6_RX */
+	pinctrl-0 = <&pinctrl_lpuart6>;
+	pinctrl-names = "default";
+};
+
+/ {
+	pinctrl {
+		pinctrl_lpuart6: lpuart6grp {
+			fsl,pins = <
+							   MXRT1062_IOMUXC_GPIO_AD_B1_03_LPUART6_RX 0x10
+					   >;
+		};
+	};
+};

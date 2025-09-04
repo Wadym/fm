@@ -1,0 +1,162 @@
+#  1. Install Docker and Docker Compose
+
+#    Make sure you have Docker and Docker Compose installed on your machine.
+#    2. Create a docker-compose.yml file
+    
+#  This file defines the services, networks, and volumes for your containers.
+
+version: '3.8'
+
+services:
+  linux_env:
+    build:
+      context: ./docker-files  # Path to the Dockerfile
+      dockerfile: NuttX-Dockerfile
+    image: nuttx-teensy:latest
+    container_name: nuttx-teensy-container
+    restart: always
+    stdin_open: true  # Keeps STDIN open (useful for interactive shell)
+    tty: true  # Allocates a pseudo-TTY
+    privileged: true  # Full system access (needed for USB and hardware operations)
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"  # Attach a specific USB device
+      - "/dev/ttyUSB1:/dev/ttyUSB1"  # Attach another USB device if needed
+    # The following four lines are instead of the three previous in case the previous lines warn of:
+    #   "Invalid child element in a block mapping" :
+    #cap_add:
+    #  - SYS_ADMIN
+    #devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+    volumes:
+      - "/home/vg/workspace/fm/src/test_idea/NuttXOnTeensy:/mnt/shared"  # Mount a local folder into the container
+      #- "${PWD}:/mnt/shared"  # Mount current directory dynamically
+      - "/dev:/dev"  # Allows full device access (optional, use with caution)
+      #- "/dev:/dev"  # Auto-detect all USB devices
+    environment:
+      - TERM=xterm  # Fix terminal issues in some cases
+
+# How to Run
+
+#  3. Running and Stopping the Container
+#  Navigate to the directory containing docker-compose.yml and use the following commands:
+#    Start the container:
+#  docker-compose up -d  # Build & run in the background
+#  docker-compose up --build -d
+#  docker exec -it nuttx-teensy-container bash  # Open an interactive shell (Ubuntu)
+#  docker exec -it nuttx-teensy-container sh  # For Alpine
+#  docker-compose down  # Stop and remove the container
+
+#  The -d flag runs the container in detached mode (in the background).
+# Stop the container:
+# docker-compose down
+
+# This stops and removes the container.
+#
+# Restart the container:
+# docker-compose restart
+
+# View running containers:
+#  docker ps
+
+# Test USB & Serial Connection Inside the Container
+#
+# After entering the container (docker exec -it my_linux_container bash), you can check:
+# lsusb  # List USB devices
+# dmesg | grep ttyUSB  # Check recognized serial devices
+# minicom -D /dev/ttyUSB0  # Open a serial connection (if installed)
+# Monitor real-time USB connections:
+# udevadm monitor --kernel
+# Plug/unplug a USB device and see if it is detected.
+# Check permissions on USB devices:
+# ls -l /dev/ttyUSB*
+# Open serial communication (if using a serial device):
+# minicom -D /dev/ttyUSB0
+
+# Auto-Detect USB Devices with a Udev Rule
+# To make sure USB devices are properly detected and permissions are set inside the container, you can create a udev rule:
+#
+# 1. Create a udev rule file on your host machine:
+# echo 'SUBSYSTEM=="usb", ACTION=="add", MODE="0666"' | sudo tee /etc/udev/rules.d/99-usb.rules
+# 2. Restart udev:
+# sudo udevadm control --reload-rules && sudo udevadm trigger
+# 3. Restart your container:
+# docker-compose down && docker-compose up -d
+
+# Alternative for docker-compose.override.yml (More Flexibility)
+# If you don’t want to hardcode ${PWD}, you can create a separate override file:
+# docker-compose.override.yml :
+# version: '3.8'
+#
+#services:
+#  linux_env:
+#    volumes:
+#      - "${PWD}:/mnt/shared"
+# Then run:
+# docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+# How to Run (PWD Expansion in Shell)
+#
+# If ${PWD} does not work in docker-compose.yml directly, you can use docker-compose with explicit variable expansion:
+# Linux/macOS:
+#  docker-compose up -d
+# OR
+# export PWD=$(pwd) && docker-compose up -d
+
+# Windows (PowerShell)
+# $env:PWD = (Get-Location).Path
+# docker-compose up -d
+
+# Verification (Check Inside the Container)
+# After starting the container, verify the shared directory:
+#  docker exec -it my_linux_container bash  # Open container shell
+#  ls /mnt/shared  # Should list files from the host's current directory
+
+
+
+# Command 'docker-compose' not found, but can be installed with:
+# sudo snap install docker          # version 27.2.0, or
+# sudo apt  install docker-compose  # version 1.29.2-1
+# See 'snap info docker' for additional versions.
+
+# WARNING: Image for service linux_env was built because it did not already exist.
+# To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+
+# Use `teensy_loader_cli --list-mcus` to list supported MCUs.
+# ./../bin/teensy_loader_cli --list-mcus
+# Supported MCUs are:
+# - at90usb162
+# - atmega32u4
+# - at90usb646
+# - at90usb1286
+# - mkl26z64
+# - mk20dx128
+# - mk20dx256
+# - mk66fx1m0
+# - mk64fx512
+# - imxrt1062
+# - TEENSY2
+# - TEENSY2PP
+# - TEENSYLC
+# - TEENSY30
+# - TEENSY31
+# - TEENSY32
+# - TEENSY35
+# - TEENSY36
+# - TEENSY40
+# - TEENSY41
+# - TEENSY_MICROMOD
+
+# updates teensy"
+# ../../bin/teensy_loader_cli --mcu=TEENSY40 -w -v nuttx.hex
+
+# configure nuttx
+# make menuconfig
+
+# /bin/teensy_loader_cli --mcu=TEENSY40 -w -v nuttx.hex
+
+# Step 6: Rebuild and Flash NuttX
+#  make clean
+#  make -j$(nproc)
+#  /bin/teensy_loader_cli --mcu=TEENSY40 -w -v nuttx.hex
+
+# tools/configure.sh teensy-4.x:nsh-4.0

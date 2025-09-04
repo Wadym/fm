@@ -1,0 +1,1 @@
+docker run --rm -it --privileged --device=/dev/bus/usb nuttx-teensy

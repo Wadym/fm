@@ -43,3 +43,8 @@ cmake-build-*/
 .kdev4/
 frontend/docker-compose.yml
 .DS_Store
+
+
+nuttx/
+
+

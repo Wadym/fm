@@ -1,0 +1,69 @@
+FROM ubuntu:latest
+LABEL authors="flying-machine"
+
+# Use Ubuntu as base image
+#FROM ubuntu:22.04
+
+# Set non-interactive mode for apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Ubuntu with serial communication support. Installs minicom for testing serial ports.
+RUN apt update && apt install -y usbutils nano minicom udev
+
+# Install necessary dependencies
+RUN apt update && apt install -y \
+    build-essential git cmake gperf flex bison \
+    libncurses-dev python3 python3-pip python3-serial \
+    ninja-build wget unzip \
+    screen minicom \
+    udev sudo && \
+    apt clean
+
+# Install ARM GCC Toolchain
+# RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/12-2022q4/gcc-arm-none-eabi-12.2.rel1-x86_64-linux.tar.bz2 \
+# RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/12-2022q4-major/gcc-arm-none-eabi-12.2.rel1-x86_64-linux.tar.bz2 \
+# RUN curl -LO https://developer.arm.com/-/media/Files/downloads/gnu-rm/12-2022q4-major/gcc-arm-none-eabi-12.2.rel1-x86_64-linux.tar.bz2 \
+# RUN wget --no-check-certificate https://developer.arm.com/-/media/Files/downloads/gnu-rm/12-2022q4-major/gcc-arm-none-eabi-12.2.rel1-x86_64-linux.tar.bz2 \
+# RUN  wget https://developer.arm.com/-/media/Files/downloads/gnu/12.2.rel1/binrel/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz && \
+RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2 && \
+    tar -xjf gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2 && \
+    rm gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+
+# Set environment variables for ARM toolchain
+ENV PATH="/gcc-arm-none-eabi-10.3-2021.10/bin:${PATH}:/bin"
+
+# Clone NuttX repositories
+WORKDIR /nuttx
+#  (run locally)
+#RUN git clone https://github.com/apache/nuttx.git nuttx && \
+#    git clone https://github.com/apache/nuttx-apps.git apps
+
+RUN apt update && apt install -y \
+    libusb-1.0-0-dev \
+    kconfig-frontends \
+    gperf \
+    bison \
+    flex
+
+# Set up default board configuration for Teensy 4.0
+WORKDIR /nuttx/nuttx
+# teensy-4.0:nsh (run  manually)
+#RUN chmod +x tools/configure.sh
+#RUN /bin/bash tools/configure.sh teensy-4.x:nsh-4.0
+
+# Build NuttX (build manually)
+#RUN make -j$(nproc)
+
+# Install Teensy Loader CLI for flashing
+RUN apt install -y teensy-loader-cli
+# ENTRYPOINT ["top", "-b"]
+# Expose serial device for Teensy connection
+CMD ["bash"]
+
+
+
+# WARNING: Image for service linux_env was built because it did not already exist.
+# To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+# docker run --rm -it --privileged --device=/dev/bus/usb nuttx-teensy
+# teensy-loader-cli --mcu=TEENSY40 -w -v /nuttx/nuttx/nuttx.hex
+

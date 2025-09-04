@@ -1,0 +1,9 @@
+# Inside the container, once the Teensy is in bootloader mode, run:
+teensy-loader-cli --mcu=TEENSY40 -w -v /nuttx/nuttx/nuttx.hex
+
+# 4. Connect to NuttX Shell
+#  Find the serial port:
+# ls /dev/ttyACM*
+
+# Connect using screen:
+# screen /dev/ttyACM0 115200
