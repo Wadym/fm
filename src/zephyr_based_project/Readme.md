@@ -138,3 +138,9 @@ export PATH="$PATH:/home/vg/workspace/fm/teensy_loader_cli"
 ```
 source ~/.bashrc
 ```
+
+```
+git submodule deinit --force path/to/submodule
+git submodule deinit --force src/zephyr_based_project/zephyr
+
+```

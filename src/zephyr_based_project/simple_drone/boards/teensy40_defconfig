@@ -1,0 +1,9 @@
+CONFIG_FLASH_SIZE=2048          # Flash size in KB
+CONFIG_SRAM_SIZE=1024           # RAM size in KB
+CONFIG_CLOCK_CONTROL=y          # Enable clock control
+CONFIG_GPIO=y                   # Enable GPIO
+CONFIG_SERIAL=y                 # Enable UART
+
+SERIAL_SUPPORT_ASYNC=y
+# CONSOLE_HAS_DRIVER=n
+UART_ASYNC_API=y

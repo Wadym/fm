@@ -1,0 +1,174 @@
+//working
+//&lpuart6 {
+//    status = "okay";
+//    current-speed = <100000>;   /* SBUS uses 100k baud */
+//    parity = "even";
+//    stop-bits = "2";
+//    pinctrl-0 = <&pinctrl_lpuart6 &pinctrl_lpuart6>; /* default + sleep */
+//    pinctrl-names = "default", "sleep";
+//};
+
+//&pinctrl {
+//    pinctrl_lpuart6: lpuart6grp {
+//        fsl,pins = <
+//            0x0003 0x0000   /* mux = 3 (LPUART6_RX), pad = 0 (default) */
+//        >;
+//    };
+//};
+
+//working eigher
+&lpuart6 {
+    status = "okay";
+    current-speed = <100000>;   /* SBUS uses 100k baud */
+    parity = "even";
+    stop-bits = "2";
+    pinctrl-0 = <&pinctrl_lpuart6 &pinctrl_lpuart6>; /* default + sleep */
+    pinctrl-names = "default", "sleep";
+    label = "UART_6";
+};
+
+&pinctrl {
+    pinctrl_lpuart6: lpuart6grp {
+        fsl,pins = <
+            0x0003 0x0000   /* mux = 3 (LPUART6_RX), pad = 0 (default) */
+        >;
+    };
+};
+
+/* ===========================
+ * LPUART6 for SBUS input (pin 15)
+ * =========================== */
+//&lpuart6 {
+//    status = "okay";
+//    current-speed = <100000>;       /* SBUS baud */
+//    parity = "even";
+//    stop-bits = "2";                /* must be string */
+//    pinctrl-0 = <&pinctrl_lpuart6>;
+//    pinctrl-names = "default";
+//};
+
+/* ===========================
+ * LPUART1 for UART console (TX only)
+ * =========================== */
+//not working
+//&lpuart1 {
+//    status = "okay";
+//    current-speed = <115200>;
+//    pinctrl-0 = <&pinctrl_lpuart1>;
+//    pinctrl-names = "default";
+//};
+
+/* ===========================
+ * Pinctrl definitions
+ * =========================== */
+//&pinctrl {
+//    pinctrl_lpuart6: lpuart6grp {
+//        fsl,pins = <MXRT1062_IOMUXC_GPIO_AD_B1_03_LPUART6_RX 0x10>;
+//    };
+
+//    pinctrl_lpuart1: lpuart1grp {
+//        fsl,pins = <MXRT1062_IOMUXC_UART1_TX 0x10>;
+//    };
+//};
+
+//&pinctrl {
+//    pinctrl_lpuart6: lpuart6grp {
+//        fsl,pins = <3 6>;  /* GPIO_AD_B1_03, function 6 = LPUART6_RX */
+//    };
+//};
+
+/* ===========================
+ * Onboard LED
+ * =========================== */
+//&gpio1 {
+//    led: led0 {
+//        gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;  /* adjust pin if needed */
+//        label = "LED0";
+//    };
+//};
+
+
+/*
+ * Add an alias for the LED.
+ * This makes the LED available to the application as a simple alias.
+ */
+/// {
+//    aliases {
+//        led0 = &my_led;
+//    };
+//};
+
+/*
+ * Define the standard 'gpio-leds' node.
+ * This node contains the definition of your LED.
+ */
+//&soc {
+/// {
+//    leds {
+//        compatible = "gpio-leds";
+//        my_led: led_0 {
+//            // The Teensy 4.0 onboard LED is on GPIO_B0_18, which is the 18th pin on GPIO port 4.
+//            // The GPIO controller node (&gpio4) is defined in the base DTS file.
+//            // Replace <18> with the correct pin number if using a different GPIO.
+//            gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+//            label = "My LED";
+//        };
+//    };
+//};
+
+
+/ {
+	aliases {
+		toggle = &toggle_gpio;
+		sw0 = &button0;
+	};
+
+	app-gpios {
+		compatible = "gpio-keys";
+		toggle_gpio: toggle-gpio {
+			gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
+			label = "Toggle Teensy Pin 9";
+		};
+		button0: button_0 {
+			gpios = < &gpio1 25 GPIO_ACTIVE_LOW >;
+			label = "Push button switch 0 at Pin 23";
+		};
+	};
+};
+
+
+&lpuart1 {
+	status = "okay";
+	current-speed = <115200>; /* Set UART baud rate */
+	//tx-pin = <1>;            /* TX pin number */
+	//rx-pin = <0>;            /* RX pin number */
+	label = "UART_1";
+};
+
+&lpuart4 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_4";
+};
+
+
+&lpuart8 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_8";
+};
+
+// That will make UART2 available in your app at pins 7 (RX) and 8 (TX).
+&lpuart2 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_2";
+};
+
+// LPUART3_TX: Pin 14
+// LPUART3_RX: Pin 15
+&lpuart3 {
+	status = "okay";
+	current-speed = <115200>;
+	label = "UART_3";
+};
