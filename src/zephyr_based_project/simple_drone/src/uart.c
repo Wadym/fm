@@ -21,7 +21,7 @@
 
 #define START_DELAY     500
 #define STACK_SIZE      500
-#define PRIORITY        -5
+#define PRIORITY        5
 
 //#define UART_DEV        DT_LABEL(DT_NODELABEL(lpuart4))
 //#define UART_DEV        DT_LABEL(DT_NODELABEL(lpuart1))
@@ -77,7 +77,7 @@ void uart_main_f()
     LOG_INF("Hello World from uart! while loop\n");
 
         uart_poll_out(uart_dev, 'A');  // send test char
-        k_msleep(1000);
+        //k_msleep(1000);
     
     while(!tx_done){}
   }

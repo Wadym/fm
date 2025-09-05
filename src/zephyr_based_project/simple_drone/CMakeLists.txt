@@ -14,5 +14,5 @@ target_sources(app PRIVATE src/led.c)
 #target_sources(app PRIVATE src/pin.c)
 #target_sources(app PRIVATE src/button.c)
 #target_sources(app PRIVATE src/uart.c)
-target_sources(app PRIVATE src/uart4.c)
+#target_sources(app PRIVATE src/uart4.c)
 

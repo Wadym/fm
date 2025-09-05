@@ -125,16 +125,17 @@ void sbus_thread(void *arg1, void *arg2, void *arg3)
             ch[14] = ((sbus_buf[20]>>2 | sbus_buf[21]<<6) & 0x07FF);
             ch[15] = ((sbus_buf[21]>>5 | sbus_buf[22]<<3) & 0x07FF);
 
-            LOG_INF("SBUS channels: %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u",
-                ch[0], ch[1], ch[2], ch[3], ch[4], ch[5], ch[6], ch[7],
-                ch[8], ch[9], ch[10], ch[11], ch[12], ch[13], ch[14], ch[15]);
+            //LOG_INF("SBUS channels: %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u",
+            //    ch[0], ch[1], ch[2], ch[3], ch[4], ch[5], ch[6], ch[7],
+            //    ch[8], ch[9], ch[10], ch[11], ch[12], ch[13], ch[14], ch[15]);
+            LOG_INF("SBUS channels: %u %u %u", ch[0], ch[1], ch[2]);
         }
-        k_msleep(10);
+        k_msleep(10000); //10
     }
 }
 
-K_THREAD_DEFINE(sbus_tid, 1024, sbus_thread, NULL, NULL, NULL, -5, 0, 0);
-//K_THREAD_DEFINE(sbus_tid, 1024, sbus_thread, NULL, NULL, NULL, 5, 0, 0);
+K_THREAD_DEFINE(sbus_tid, 1024, sbus_thread, NULL, NULL, NULL, -9, 0, 0);
+//K_THREAD_DEFINE(sbus_tid, 1024, sbus_thread, NULL, NULL, NULL, -9, 0, 0);
 
 
 
@@ -166,8 +167,8 @@ int main(void)
 	// }
 	// return 0;
 
-	 int ret;
-    bool led_state = true;
+	int ret;
+    // led.c added: bool led_state = true;
 
     if (!gpio_is_ready_dt(&led)) {
         LOG_ERR("LED device not ready");
@@ -181,15 +182,15 @@ int main(void)
     }
 
     while (1) {
-        ret = gpio_pin_toggle_dt(&led);
+        // led.c added: ret = gpio_pin_toggle_dt(&led);
         if (ret < 0) {
             LOG_ERR("Failed to toggle LED");
             return 0;
         }
 
-        led_state = !led_state;
-        LOG_INF("LED state: %s", led_state ? "ON" : "OFF");
+        // led.c added: led_state = !led_state;
+        // led.c added: LOG_INF("LED state: %s", led_state ? "ON" : "OFF");
 
-        k_msleep(SLEEP_TIME_MS);
+        k_msleep(SLEEP_TIME_MS*100);
     }
 }

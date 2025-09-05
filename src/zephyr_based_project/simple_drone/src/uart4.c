@@ -66,7 +66,7 @@ static int rx_buf_pos;
 
 /* scheduling priority used by each thread */
 //#define PRIORITY 7
-#define PRIORITY -5
+#define PRIORITY -7
 
 /* delay between greetings (in ms) */
 #define SLEEPTIME 5000
@@ -99,7 +99,7 @@ void uart6_main(void) {
     print_uart("Echo: ");
     print_uart(tx_buf);
     print_uart("\r\n");
-    k_msleep(1000);
+    //k_msleep(1000);
   }
 }
 

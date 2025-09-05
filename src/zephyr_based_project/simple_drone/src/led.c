@@ -9,13 +9,14 @@
 #include <zephyr/drivers/gpio.h>
 
 /* 1000 msec = 1 sec */
-#define SLEEP_TIME_MS   75786560
+//#define SLEEP_TIME_MS   75786560
+#define SLEEP_TIME_MS   1500
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED0_NODE DT_ALIAS(led0)
 #define START_DELAY     500
 #define STACK_SIZE      500
-#define PRIORITY        -5
+#define PRIORITY        -7
 
 /*
  * A build error on this line means your board is unsupported.
