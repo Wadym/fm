@@ -144,3 +144,8 @@ git submodule deinit --force path/to/submodule
 git submodule deinit --force src/zephyr_based_project/zephyr
 
 ```
+
+```
+git submodule add --force https://github.com/Wadym/zephyr.git ./src/zephyr_based_project/zephyr
+```
+
