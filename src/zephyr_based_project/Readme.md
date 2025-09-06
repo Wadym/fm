@@ -149,3 +149,8 @@ git submodule deinit --force src/zephyr_based_project/zephyr
 git submodule add --force https://github.com/Wadym/zephyr.git ./src/zephyr_based_project/zephyr
 ```
 
+To discard all changes in tracked files (staged and unstaged) and untracked files:
+```
+    git reset --hard HEAD
+    git clean -fd
+```
